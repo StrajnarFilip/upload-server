@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -18,6 +19,7 @@ func main() {
 			// Get all files from "documents" key:
 			files := form.File["documents"]
 
+			filePaths := make([]string, 0)
 			// Loop through files:
 			for _, file := range files {
 				// Create a random buffer with 32 bytes
@@ -33,10 +35,16 @@ func main() {
 				// Save the files to disk:
 				if err := c.SaveFile(file, "./public"+filePath); err != nil {
 					return err
+				} else {
+					filePaths = append(filePaths, filePath)
 				}
-				return c.SendString(filePath)
 			}
-			return err
+
+			jsonString, err := json.Marshal(filePaths)
+			if err != nil {
+				return err
+			}
+			return c.Send(jsonString)
 		}
 		return nil
 	})
