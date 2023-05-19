@@ -12,7 +12,10 @@ import (
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		// Increased body limit to 8 GB.
+		BodyLimit: 8 * 1024 * 1024 * 1024,
+	})
 	app.Post("/upload", func(c *fiber.Ctx) error {
 		// Parse the multipart form:
 		if form, err := c.MultipartForm(); err == nil {
